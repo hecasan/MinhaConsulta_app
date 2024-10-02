@@ -7,7 +7,6 @@ import ConsultationsListScreen from '../screens/ConsultationsListScreen';
 import ScheduleConsultationScreen from '../screens/ScheduleConsultationScreen';
 import ConfirmAppointmentScreen from '../screens/ConfirmAppointmentScreen';
 
-
 export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
