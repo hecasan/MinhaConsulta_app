@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import { NativeBaseProvider, Box, Button, Input, Center, Text } from 'native-base';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator'; // Importação da tipagem correta
+import React, { useState } from "react";
+import {
+  NativeBaseProvider,
+  Box,
+  Button,
+  Input,
+  Center,
+  Text,
+} from "native-base";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/AppNavigator"; 
+import { register } from "../api/auth";
 
 type SignUpScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  'SignUp'
+  "SignUp"
 >;
 
 type Props = {
@@ -14,48 +22,31 @@ type Props = {
 
 const SignUpScreen = ({ navigation }: Props) => {
   // Estado para armazenar os valores dos campos
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSignUp = async () => {
     if (!username || !password || !confirmPassword) {
-        setMessage('Todos os campos são obrigatórios.');
-        return;
+      setMessage("Todos os campos são obrigatórios.");
+      return;
     }
 
     if (password !== confirmPassword) {
-        setMessage('As senhas não coincidem.');
-        return;
+      setMessage("As senhas não coincidem.");
+      return;
     }
 
     try {
-        const response = await fetch('http://localhost:3000/api/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password, confirmPassword }),
-        });
-
-        const data = await response.json();
-        console.log(data); // Log da resposta
-
-        if (!response.ok) {
-            setMessage(data.message || 'Erro desconhecido'); // Mensagem padrão
-        } else {
-            setMessage('Usuário registrado com sucesso!');
-            navigation.navigate('Login');
-        }
+      await register(username, password, confirmPassword);
+      setMessage("Usuário registrado com sucesso!");
+      navigation.navigate("Login");
     } catch (error) {
-        console.error('Erro:', error); // Log de erros
-        setMessage('Erro ao cadastrar usuário.');
+      console.error("Erro:", error);
+      setMessage(error instanceof Error ? error.message : "Erro ao cadastrar usuário.");
     }
-    console.log('Dados a serem enviados:', { username, password, confirmPassword });
-
-};
-  
+  };
 
   return (
     <NativeBaseProvider>
@@ -82,9 +73,7 @@ const SignUpScreen = ({ navigation }: Props) => {
             onChangeText={setConfirmPassword}
           />
           {message ? <Text color="red.500">{message}</Text> : null}
-          <Button onPress={handleSignUp}>
-            Criar Conta
-          </Button>
+          <Button onPress={handleSignUp}>Criar Conta</Button>
         </Box>
       </Center>
     </NativeBaseProvider>
